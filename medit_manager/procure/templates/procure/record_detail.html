@@ -1,0 +1,15 @@
+<h2> {{record.code}} - {{record.title}} </h2>
+<p> {{record.description}} </p>
+
+<h4> File đính kèm </h4>
+<ul>
+    {% for f in record.attachments.all %}
+        <li>
+            <a href="{{f.file.url}}" target="_blank">
+                {{f.file.name|cut:'procure/attachments/'}}
+            </a>
+        </li>
+    {% empty %}
+        <li>Không có file đính kèm</li>
+    {% endfor %}
+</ul>
