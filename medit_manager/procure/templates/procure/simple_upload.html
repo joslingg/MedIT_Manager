@@ -1,0 +1,11 @@
+<!-- filepath: d:\LINH_PROJECTS\django_pjs\MedIT Manager\medit_manager\procure\templates\procure\simple_upload.html -->
+<h2>Upload file đơn giản</h2>
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Upload</button>
+</form>
+
+{% if uploaded_file_url %}
+    <p>File đã upload: <a href="{{ uploaded_file_url }}">{{ uploaded_file_url }}</a></p>
+{% endif %}
