@@ -1,4 +1,6 @@
 {% load humanize %}
+{% load custom_filters %}
+
 <!DOCTYPE html>
 <html lang="vi">
 <head>
@@ -47,8 +49,8 @@
           <td>{{ item.name }}</td>
           <td>{{ item.unit|default:"-" }}</td>
           <td>{{ item.quantity }}</td>
-          <td>{{ item.unit_price|floatformat:0|intcomma }} đ</td>
-          <td>{{ item.total_price|floatformat:0|intcomma }} đ</td>
+          <td>{{ item.unit_price|intdot }} đ</td>
+          <td>{{ item.total_price|intdot }} đ</td>
           <td>
             {% if item.is_paid %}
               <span class="badge bg-success">Đã thanh toán</span>
@@ -68,7 +70,7 @@
       <tr>
         <th colspan="5" class="text-end">Tổng trị giá:</th>
         <th colspan="2" class="text-primary">
-            {{ total_cost|floatformat:0|intcomma }} đ
+            {{ total_cost|intdot }} đ
         </th>
       </tr>
     </tfoot>

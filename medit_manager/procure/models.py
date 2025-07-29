@@ -22,7 +22,7 @@ class ProcurementRecord(models.Model):
         verbose_name = 'Hồ sơ' 
         verbose_name_plural = 'Hồ sơ'
     
-    def total_cost(self):
+    def calc_total_cost(self):
         return sum(item.total_price() for item in self.items.all())
     
     def __str__(self):

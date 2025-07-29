@@ -1,0 +1,67 @@
+{% load humanize %}
+{% load custom_filters %}
+
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xóa hồ sơ</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="container mt-5 pb-5">
+  <h3 class="text-danger">❗Bạn có chắc muốn xóa hồ sơ này không?</h3>
+  <hr>
+
+  <div class="mb-3">
+    <strong>Mã hồ sơ:</strong> {{ object.code }} <br>
+    <strong>Tiêu đề:</strong> {{ object.title }} <br>
+    <strong>Mô tả:</strong> {{ object.description }} <br>
+    <strong>Ngày tạo:</strong> {{ object.date_created|date:"d/m/Y" }}
+  </div>
+
+  <h5>📎 File đính kèm</h5>
+  <ul>
+    {% for f in object.attachments.all %}
+      <li>
+        <a href="{{ f.file.url }}" target="_blank">
+          {{ f.file.name|cut:"procure/attachments/" }}
+        </a>
+      </li>
+    {% empty %}
+      <li>Không có file đính kèm</li>
+    {% endfor %}
+  </ul>
+
+  <h5>🛒 Danh sách mặt hàng</h5>
+  <table class="table table-sm table-bordered">
+    <thead>
+      <tr>
+        <th>Tên</th>
+        <th>Đơn vị</th>
+        <th>Số lượng</th>
+        <th>Đơn giá</th>
+        <th>Tổng</th>
+        <th>Đã thanh toán</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for item in object.items.all %}
+      <tr>
+        <td>{{ item.name }}</td>
+        <td>{{ item.unit }}</td>
+        <td>{{ item.quantity }}</td>
+        <td>{{ item.unit_price|intdot }}</td>
+        <td>{{ item.total_price|intdot }}</td>
+        <td>{{ item.is_paid|yesno:"✓,✗" }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+
+  <form method="post" class="mt-4">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">🗑️ Xác nhận xóa</button>
+    <a href="{% url 'procure:record_list' %}" class="btn btn-secondary">↩ Quay lại</a>
+  </form>
+</body>
+</html>
