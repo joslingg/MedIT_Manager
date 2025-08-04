@@ -1,5 +1,5 @@
 from django.urls import path
-from .views import ProcurementRecordListView, ProcurementRecordDetailView, ProcurementRecordCreateView, ProcurementRecordUpdateView, ProcurementRecordDeleteView, export_excel
+from .views import ProcurementRecordListView, ProcurementRecordDetailView, ProcurementRecordCreateView, ProcurementRecordUpdateView, ProcurementRecordDeleteView, DashboardView, export_excel
 
 app_name = "procure"
 
@@ -10,4 +10,5 @@ urlpatterns = [
     path('edit/<int:pk>/', ProcurementRecordUpdateView.as_view(), name='edit_record'),
     path('delete/<int:pk>/', ProcurementRecordDeleteView.as_view(), name='delete_record'),
     path("export_excel/", export_excel, name="export_excel"),
+    path("dashboard/", DashboardView.as_view(), name="dashboard"),
 ]

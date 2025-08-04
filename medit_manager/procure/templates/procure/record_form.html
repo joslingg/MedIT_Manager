@@ -57,6 +57,13 @@
     <h4 class="mt-4">Danh sách mặt hàng</h4>
     {{ formset.management_form }}
 
+    <p>
+      <label for="id_import_file">Import từ Excel:</label>
+      <input type="file" name="import_file" id="id_import_file">
+      <a href="{% static 'procure/mau_danh_sach_mon.xlsx' %}" class="btn btn-sm btn-outline-info ms-2">
+        ⬇️ Tải file mẫu
+      </a>
+    </p>
     <table class="table table-bordered formset-table align-middle">
       <thead class="table-light">
         <tr>
@@ -64,7 +71,6 @@
           <th>Đơn vị</th>
           <th>Số lượng</th>
           <th>Đơn giá</th>
-          <th>Đã thanh toán?</th>
           <th>Xoá</th>
         </tr>
       </thead>
@@ -75,7 +81,6 @@
             <td>{{ form.unit|add_class:"form-control" }}</td>
             <td>{{ form.quantity|add_class:"form-control" }}</td>
             <td>{{ form.unit_price|add_class:"form-control" }}</td>
-            <td class="text-center">{{ form.is_paid|add_class:"form-check-input" }}</td>
             <td class="text-center">
               <span class="delete-row-btn">🗑️</span>
             </td>
@@ -86,6 +91,13 @@
 
     <div class="mb-3">
       <button type="button" class="btn btn-outline-primary" id="add-row">➕ Thêm mặt hàng</button>
+    </div>
+
+    <div class="form-check mb-3">
+      {{ form.is_paid }}
+      <label class="form-check-label" for="id_is_paid">
+        Đã thanh toán toàn bộ hồ sơ
+      </label>
     </div>
 
     <button type="submit" class="btn btn-success">💾 Lưu hồ sơ</button>

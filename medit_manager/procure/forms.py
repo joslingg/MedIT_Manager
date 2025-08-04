@@ -22,14 +22,19 @@ class ProcurementRecordForm(forms.ModelForm):
         label="Tài liệu đính kèm"
     )
 
+    import_file = forms.FileField(
+        required=False,
+        label="Import danh sách món (Excel)"
+    )
+
     class Meta:
         model = ProcurementRecord
-        fields = ['title', 'description']
+        fields = ['title', 'description','is_paid']
         
 class PurchasedItemForm(forms.ModelForm):
     class Meta:
         model = PurchasedItem
-        fields = ['name', 'unit', 'quantity', 'unit_price', 'is_paid']
+        fields = ['name', 'unit', 'quantity', 'unit_price']
         
 PurchasedItemFormSet = inlineformset_factory(
     ProcurementRecord,

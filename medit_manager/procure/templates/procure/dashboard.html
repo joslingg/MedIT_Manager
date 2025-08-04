@@ -1,0 +1,51 @@
+{% extends "procure/base.html" %}
+{% load custom_filters %}
+{% block content %}
+<div class="container py-4">
+  <h2>📊 Báo cáo tổng quan</h2>
+  <div class="row g-3 my-3">
+    <div class="col-md-4">
+      <div class="card border-primary shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Tổng số hồ sơ</h5>
+          <p class="card-text display-6">{{ total_records }}</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-success shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Đã thanh toán</h5>
+          <p class="card-text text-success display-6">{{ total_paid|intdot }} đ</p>
+        </div>
+      </div>
+    </div>
+    <div class="col-md-4">
+      <div class="card border-warning shadow-sm">
+        <div class="card-body">
+          <h5 class="card-title">Chưa thanh toán</h5>
+          <p class="card-text text-warning display-6">{{ total_unpaid|intdot }} đ</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h4 class="mt-5">📈 Tổng tiền theo tháng ({{ current_year }})</h4>
+  <table class="table table-bordered mt-3">
+    <thead>
+      <tr>
+        {% for i in 1|to:12 %}
+          <th>Th{{ i }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        {% for i in 1|to:12 %}
+          <td>{{ monthly_totals.i|intdot }} đ</td>
+        {% endfor %}
+      </tr>
+    </tbody>
+  </table>
+</div>
+{% endblock %}

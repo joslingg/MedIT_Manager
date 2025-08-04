@@ -8,6 +8,7 @@ class ProcurementRecord(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name="Mô tả")
     total_cost = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Tổng trị giá")
     date_created = models.DateField(auto_now_add=True, verbose_name="Ngày tạo")
+    is_paid = models.BooleanField(default=False, verbose_name="Đã thanh toán")
     
     def save(self,*args, **kargs):
         if not self.code:
@@ -38,8 +39,11 @@ class PurchasedItem(models.Model):
     unit = models.CharField(max_length=50, blank=True, verbose_name="Đơn vị tính")
     quantity = models.PositiveIntegerField(default=1, verbose_name="Số lượng")
     unit_price = models.DecimalField(max_digits=15, decimal_places=2, verbose_name="Đơn giá")
-    is_paid = models.BooleanField(default=False, verbose_name="Đã thanh toán")
     
+    class Meta:
+        verbose_name = 'Danh sách món hàng' 
+        verbose_name_plural = 'Danh sách món hàng'
+        
     def total_price(self):
         return self.quantity * self.unit_price
     
@@ -50,6 +54,10 @@ class ProcurementAttachment(models.Model):
     record = models.ForeignKey(ProcurementRecord, on_delete=models.CASCADE, related_name='attachments')
     file = models.FileField(upload_to='procure/attachments/')
     description = models.CharField(max_length=255, blank=True, verbose_name='Mô tả tài liệu (nếu có)')
+    
+    class Meta:
+        verbose_name = 'Tài liệu đính kèm' 
+        verbose_name_plural = 'Tài liệu đính kèm'
     
     def __str__(self):
         return os.path.basename(self.file.name)

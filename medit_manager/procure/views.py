@@ -8,7 +8,12 @@ from .forms import ProcurementRecordForm, PurchasedItemFormSet
 from django.db.models import Q
 from datetime import datetime
 import openpyxl
+from io import BytesIO
+from django.contrib import messages
 from django.http import HttpResponse
+from django.views.generic import TemplateView
+from .models import ProcurementRecord
+from django.db.models import Sum
 
 
 class ProcurementRecordListView(ListView):
@@ -28,6 +33,10 @@ class ProcurementRecordListView(ListView):
         year = self.request.GET.get("year")
         if month and year:
             qs = qs.filter(date_created__month=month, date_created__year=year)
+        
+        is_paid = self.request.GET.get("is_paid")
+        if is_paid in ["0", "1"]:
+            qs = qs.filter(is_paid=bool(int(is_paid)))
         
         return qs.order_by("-date_created")
 
@@ -107,6 +116,12 @@ class ProcurementRecordCreateView(CreateView):
     success_url = reverse_lazy('procure:record_list')
 
     def get_context_data(self, **kwargs):
+        model = ProcurementRecord
+    form_class = ProcurementRecordForm
+    template_name = "procure/record_form.html"
+    success_url = reverse_lazy('procure:record_list')
+
+    def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
         if self.request.POST:
             context['formset'] = PurchasedItemFormSet(self.request.POST)
@@ -118,24 +133,45 @@ class ProcurementRecordCreateView(CreateView):
         context = self.get_context_data()
         formset = context['formset']
 
-        if formset.is_valid():
-            # Lưu file đính kèm
-            attachments = form.cleaned_data.get('attachments')
-            if attachments:
-                for file in attachments:
-                    ProcurementAttachment.objects.create(
-                        record=self.object,
-                        file=file
-                    )
-
-            # Lưu danh sách món
-            purchased_items = formset.save(commit=False)
-            for item in purchased_items:
-                item.record = self.object
-                item.save()
-            return super().form_valid(form)
-        else:
+        if not formset.is_valid():
             return self.form_invalid(form)
+
+        self.object = form.save()
+
+        # Lưu file đính kèm
+        attachments = form.cleaned_data.get('attachments')
+        if attachments:
+            for file in attachments:
+                ProcurementAttachment.objects.create(record=self.object, file=file)
+
+        # Lưu các món từ formset
+        items = formset.save(commit=False)
+        for item in items:
+            item.record = self.object
+            item.save()
+        for obj in formset.deleted_objects:
+            obj.delete()
+
+        # Kiểm tra nếu có file Excel
+        excel_file = self.request.FILES.get('import_file')
+        if excel_file:
+            try:
+                wb = openpyxl.load_workbook(excel_file)
+                sheet = wb.active
+                for idx, row in enumerate(sheet.iter_rows(min_row=2, values_only=True), start=2):
+                    stt, name, unit, quantity, unit_price = row[:5]
+                    if name:
+                        PurchasedItem.objects.create(
+                            record=self.object,
+                            name=name,
+                            unit=unit or '',
+                            quantity=quantity or 0,
+                            unit_price=unit_price or 0
+                        )
+            except Exception as e:
+                messages.warning(self.request, f"Lỗi khi đọc Excel: {e}")
+
+        return super().form_valid(form)
 
 class ProcurementRecordDeleteView(DeleteView):
     model = ProcurementRecord
@@ -147,6 +183,34 @@ class ProcurementRecordDeleteView(DeleteView):
         context['record'] = self.object
         return context
 
+class DashboardView(TemplateView):
+    template_name = "procure/dashboard.html"
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        context["total_records"] = ProcurementRecord.objects.count()
+        context["total_paid"] = ProcurementRecord.objects.filter(is_paid=True).aggregate(Sum("total_cost"))["total_cost__sum"] or 0
+        context["total_unpaid"] = ProcurementRecord.objects.filter(is_paid=False).aggregate(Sum("total_cost"))["total_cost__sum"] or 0
+
+        # Thống kê theo tháng trong năm hiện tại
+        current_year = datetime.now().year
+        monthly_data = (
+            ProcurementRecord.objects
+            .filter(date_created__year=current_year)
+            .values_list("date_created__month")
+            .annotate(total=Sum("total_cost"))
+            .order_by("date_created__month")
+        )
+        # Tạo dict từ 1 đến 12 tháng
+        monthly_totals = {month: 0 for month in range(1, 13)}
+        for m, total in monthly_data:
+            monthly_totals[m] = total or 0
+
+        context["monthly_totals"] = monthly_totals
+        context["current_year"] = current_year
+        return context
+    
 def export_excel(request):
     qs = ProcurementRecord.objects.all()
     q = request.GET.get("q")

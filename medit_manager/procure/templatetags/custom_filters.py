@@ -9,3 +9,7 @@ def intdot(value):
         return f"{value:,}".replace(",", ".")
     except:
         return value
+
+@register.filter 
+def to(start, end):
+    return range(start, end + 1)
