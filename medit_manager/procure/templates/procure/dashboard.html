@@ -8,7 +8,7 @@
       <div class="card border-primary shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Tổng số hồ sơ</h5>
-          <p class="card-text display-6">{{ total_records }}</p>
+          <p class="card-text display-6 fw-bolder">{{ total_records }}</p>
         </div>
       </div>
     </div>
@@ -16,7 +16,7 @@
       <div class="card border-success shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Đã thanh toán</h5>
-          <p class="card-text text-success display-6">{{ total_paid|intdot }} đ</p>
+          <p class="card-text text-success display-6 fw-bolder">{{ total_paid|intdot }} đ</p>
         </div>
       </div>
     </div>
@@ -24,7 +24,7 @@
       <div class="card border-warning shadow-sm">
         <div class="card-body">
           <h5 class="card-title">Chưa thanh toán</h5>
-          <p class="card-text text-warning display-6">{{ total_unpaid|intdot }} đ</p>
+          <p class="card-text text-warning display-6 fw-bolder">{{ total_unpaid|intdot }} đ</p>
         </div>
       </div>
     </div>
@@ -42,7 +42,9 @@
     <tbody>
       <tr>
         {% for i in 1|to:12 %}
-          <td>{{ monthly_totals.i|intdot }} đ</td>
+          <td class="text-center">
+            {{ monthly_totals|get_item:i|intdot }} đ
+          </td>
         {% endfor %}
       </tr>
     </tbody>

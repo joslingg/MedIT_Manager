@@ -24,7 +24,10 @@ class ProcurementRecord(models.Model):
         verbose_name_plural = 'Hồ sơ'
     
     def calc_total_cost(self):
-        return sum(item.total_price() for item in self.items.all())
+        total = sum(item.total_price() for item in self.items.all())
+        self.total_cost = total
+        self.save(update_fields=['total_cost'])  # chỉ lưu trường này
+        return total
     
     def __str__(self):
         return self.code or self.title

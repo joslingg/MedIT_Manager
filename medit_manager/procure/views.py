@@ -168,6 +168,7 @@ class ProcurementRecordCreateView(CreateView):
                             quantity=quantity or 0,
                             unit_price=unit_price or 0
                         )
+                self.object.calc_total_cost()
             except Exception as e:
                 messages.warning(self.request, f"Lỗi khi đọc Excel: {e}")
 
@@ -209,6 +210,7 @@ class DashboardView(TemplateView):
 
         context["monthly_totals"] = monthly_totals
         context["current_year"] = current_year
+        print("Monthly Totals:", monthly_totals)
         return context
     
 def export_excel(request):
