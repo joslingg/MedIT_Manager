@@ -32,6 +32,11 @@
     </div>
 
     <div class="mb-3">
+      <label for="id_date_recorded" class="form-label">Ngày lập hồ sơ</label>
+      {{ form.date_recorded|add_class:"form-control" }}
+    </div>
+
+    <div class="mb-3">
       <label class="form-label">Tài liệu đính kèm (có thể chọn nhiều)</label>
       {{ form.attachments }}
     </div>

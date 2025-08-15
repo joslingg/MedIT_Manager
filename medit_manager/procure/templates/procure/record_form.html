@@ -4,7 +4,7 @@
 {% load widget_tweaks %}
 {% load static %}
 
-{% block title %}Danh sách hồ sơ mua sắm{% endblock %}
+{% block title %}Tạo hồ sơ mua sắm{% endblock %}
 {% block content %}
 <body class="container mt-4">
 
@@ -30,6 +30,12 @@
           <div class="text-danger small">{{ form.attachments.errors }}</div>
         {% endif %}
       </div>
+    </div>
+
+    <!-- Ngày lập hồ sơ -->
+    <div class="mb-3">
+        <label for="{{ form.date_recorded.id_for_label }}" class="form-label fw-semibold">Ngày lập hồ sơ</label>
+        {{ form.date_recorded|add_class:"form-control" }} 
     </div>
 
     <div class="mb-3">
@@ -136,6 +142,5 @@
       });
     });
   </script>
-
 </body>
 {% endblock content %}

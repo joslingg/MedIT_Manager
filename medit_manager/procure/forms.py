@@ -1,6 +1,7 @@
 from django import forms
 from django.forms import inlineformset_factory, ClearableFileInput
 from .models import ProcurementRecord, PurchasedItem
+from django.utils import timezone
 
 class MultiFileInput(ClearableFileInput):
     allow_multiple_selected = True
@@ -29,8 +30,12 @@ class ProcurementRecordForm(forms.ModelForm):
 
     class Meta:
         model = ProcurementRecord
-        fields = ['title', 'description','is_paid']
+        fields = ['title', 'description', 'date_recorded', 'description','is_paid']
+        widgets = {
+            'date_recorded': forms.widgets.DateInput( format='%d-%m-%Y'),
+        }
         
+
 class PurchasedItemForm(forms.ModelForm):
     class Meta:
         model = PurchasedItem

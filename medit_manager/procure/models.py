@@ -8,15 +8,17 @@ class ProcurementRecord(models.Model):
     description = models.TextField(blank=True, null=True, verbose_name="Mô tả")
     total_cost = models.DecimalField(max_digits=15, decimal_places=2, default=0, verbose_name="Tổng trị giá")
     date_created = models.DateField(auto_now_add=True, verbose_name="Ngày tạo")
+    date_recorded = models.DateField(default=timezone.now, verbose_name="Ngày lập hồ sơ")
     is_paid = models.BooleanField(default=False, verbose_name="Đã thanh toán")
     
-    def save(self,*args, **kargs):
+    def save(self,*args, **kwargs):
+        # Nếu chưa có mã thì sinh mã dựa trên date_recorded (nếu người dùng nhập) hoặc ngày hôm nay
         if not self.code:
-            today = timezone.now().date()
-            count_today = ProcurementRecord.objects.filter(date_created=today).count() + 1
+            today = getattr(self, 'date_recorded', None) or timezone.now().date()
+            count_today = ProcurementRecord.objects.filter(date_recorded=today).count() + 1
             date_part = today.strftime("%d%m%y")
             self.code = f"{date_part}/{count_today}"
-        super().save(*args,**kargs)
+        super().save(*args, **kwargs)
         
     class Meta:
         ordering = ['code']
